@@ -1,0 +1,13 @@
+% -*- mode: Erlang;-*-
+{application, rolltogo,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [kernel, stdlib]},
+  {mod, { rolltogo_app, []}},
+  {env, [{port, 8080}, {num_acceptors, 200}, {in_production, true},
+	 {wait_bot, 5000},
+	 {db_options, [{host, "localhost"}, {user, "rolltogo"},
+		       {pass, "123"}, {db_name, "rolltogo"}, {num_connections, 20}]}]}
+  ]}.
