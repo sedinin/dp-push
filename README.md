@@ -1,5 +1,10 @@
 Server sends push notification to iOS devices with Apple Push Notification Service.
 
+[Apple Push Notification Service documentation](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW9)
+
+[Great tutorial about using APNs](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12)
+
+
 NOTE: Don't forget to replace my **cert/ck.pem** with yours :)
 
 NOTE: device token is hex number but not string :)
