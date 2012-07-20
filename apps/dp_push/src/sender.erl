@@ -26,8 +26,7 @@ send(#apns_msg{} = Msg, DeviceToken) ->
 
 
 test() ->
-    gen_server:cast(?MODULE, test).
-
+    send(apns:test_msg(), apns:test_device_token()).
 
 
 %%% gen_server API
@@ -43,12 +42,6 @@ handle_call(Any, _From, State) ->
 
 
 handle_cast({send, Msg, DeviceToken}, #state{apns = Apns, cert = Cert} = State) ->
-    apns:send(Msg, DeviceToken, Apns, Cert),
-    {noreply, State};
-
-handle_cast(test, #state{apns = Apns, cert = Cert} = State) ->
-    Msg = apns:test_msg(),
-    DeviceToken = apns:test_device_token(),
     apns:send(Msg, DeviceToken, Apns, Cert),
     {noreply, State};
 
