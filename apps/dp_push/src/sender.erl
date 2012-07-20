@@ -3,7 +3,7 @@
 
 -behavior(gen_server).
 
--export([start_link/1]).
+-export([start_link/1, send_test_msg/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 -include("logger.hrl").
 -include("types.hrl").
@@ -19,6 +19,9 @@ start_link(Options) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, Options, []).
 
 
+send_test_msg() ->
+    gen_server:cast(?MODULE, send_test_msg).
+
 
 
 %%% gen_server API
@@ -32,6 +35,12 @@ handle_call(Any, _From, State) ->
     error_logger:error_msg("unknown call ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
+
+handle_cast(send_test_msg, #state{apns = Apns, cert = Cert} = State) ->
+    Msg = apns:test_msg(),
+    DeviceToken = apns:test_device_token(),
+    apns:send(apns:pack_simple(Msg, DeviceToken), Apns, Cert),
+    {noreply, State};
 
 handle_cast(Any, State) ->
     error_logger:error_msg("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
@@ -49,4 +58,5 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVersion, State, _Extra) ->
     {ok, State}.	
+
 

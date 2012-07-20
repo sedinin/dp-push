@@ -1,4 +1,6 @@
--type(socket() :: pid()).
+-type(device_token() :: integer()).
+
+-type(apns_msg() :: binary()).
 
 -record(apns, {
 	  host :: string(),
