@@ -3,7 +3,8 @@
 
 -behavior(gen_server).
 
--export([start_link/1, send_test_msg/0]).
+-export([start_link/1, send_alert/2]).
+-export([test_msg/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 -include("logger.hrl").
 -include("types.hrl").
@@ -19,8 +20,13 @@ start_link(Options) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, Options, []).
 
 
-send_test_msg() ->
-    gen_server:cast(?MODULE, send_test_msg).
+-spec(send_alert(string(), device_token()) -> ok).
+send_alert(Alert, DeviceToken) ->
+    gen_server:cast(?MODULE, {send_alert, Alert, DeviceToken}),
+    ok.
+
+test_msg() ->
+    gen_server:cast(?MODULE, test_msg).
 
 
 
@@ -36,10 +42,15 @@ handle_call(Any, _From, State) ->
     {noreply, State}.
 
 
-handle_cast(send_test_msg, #state{apns = Apns, cert = Cert} = State) ->
+handle_cast({send_alert, Alert, DeviceToken}, #state{apns = Apns, cert = Cert} = State) ->
+    Msg = apns:wrap_to_json(Alert),
+    apns:send(apns:pack_simple(Msg, DeviceToken), Apns, Cert),
+    {noreply, State};
+
+handle_cast(test_msg, #state{apns = Apns, cert = Cert} = State) ->
     Msg = apns:test_msg(),
     DeviceToken = apns:test_device_token(),
-    apns:send(apns:pack_simple(Msg, DeviceToken), Apns, Cert),
+    apns:send(Msg, DeviceToken, Apns, Cert),
     {noreply, State};
 
 handle_cast(Any, State) ->
