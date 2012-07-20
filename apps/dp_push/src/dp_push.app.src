@@ -1,4 +1,4 @@
-						% -*- mode: Erlang;-*-
+% -*- mode: Erlang;-*-
 {application, dp_push,
  [
   {description, ""},
