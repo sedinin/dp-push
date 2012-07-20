@@ -1,4 +1,4 @@
-ERL_RUN_ARGS:=-pa ebin -config elog -boot start_sasl -s rolltogo_app main
+ERL_RUN_ARGS:=-pa ebin -config elog -boot start_sasl -s dp_push_app main
 
 compile: get-deps
 	rebar compile

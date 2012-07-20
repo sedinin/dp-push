@@ -1,13 +1,18 @@
-% -*- mode: Erlang;-*-
-{application, rolltogo,
+						% -*- mode: Erlang;-*-
+{application, dp_push,
  [
   {description, ""},
   {vsn, "1"},
   {registered, []},
   {applications, [kernel, stdlib]},
-  {mod, { rolltogo_app, []}},
-  {env, [{port, 8080}, {num_acceptors, 200}, {in_production, true},
-	 {wait_bot, 5000},
-	 {db_options, [{host, "localhost"}, {user, "rolltogo"},
-		       {pass, "123"}, {db_name, "rolltogo"}, {num_connections, 20}]}]}
+  {mod, { dp_push_app, []}},
+  {env, [{apns, [
+		 {host, "gateway.sandbox.push.apple.com"},
+		 {port, 2195}]
+	 },
+	 {cert, [
+		 {certfile, "cert/ck.pem"},
+		 {password, "DieselPuppetPush01"}]
+	 }]}
   ]}.
+

@@ -1,4 +1,4 @@
-%% -define(LOGGER, true).
+-define(LOGGER, true).
 
 -ifdef(LOGGER).
 -define(INFO(Format, Data), error_logger:info_msg(Format, Data)).

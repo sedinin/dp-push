@@ -10,7 +10,7 @@ start() ->
 
 send() ->
     Msg = "{\"aps\":{\"alert\":\"Hello from Erlang\",\"sound\":\"default\"}}",
-    %Msg = "{\"aps\":{\"alert\":\"You have mail!\"}}",
+    %% Msg = "{\"aps\":{\"alert\":\"You have mail!\"}}",
     send(list_to_binary(Msg)).
 
 
