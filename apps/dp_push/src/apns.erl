@@ -44,7 +44,7 @@ wrap_alert([]) -> [];
 wrap_alert(Alert) -> ["\"alert\":\"", Alert, "\""].
 
 wrap_badge(undefined) -> [];
-wrap_badge(Num) -> ["\"badge\":\"", integer_to_list(Num), "\""].
+wrap_badge(Num) -> ["\"badge\":", integer_to_list(Num)].
 
 wrap_sound(undefined) -> [];
 wrap_sound(default) -> ["\"sound\":\"default\""];
