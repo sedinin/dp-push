@@ -14,8 +14,8 @@ test:	compile
 	rebar eunit skip_deps=true
 
 run:
-	ERL_LIBS=deps:apps erl $(ERL_RUN_ARGS)
+	ERL_LIBS=deps erl $(ERL_RUN_ARGS)
 
 background:
-	ERL_LIBS=deps:apps erl -detached $(ERL_RUN_ARGS)
+	ERL_LIBS=deps erl -detached $(ERL_RUN_ARGS)
 
