@@ -7,17 +7,18 @@
   {applications, [kernel, stdlib]},
   {mod, { dp_push, []}},
   {env, [{apns, [
-		 {host, "localhost"},
-		 {feedback_host, "localhost"},
-		 %% {host, "gateway.sandbox.push.apple.com"},
-		 %% {feedback_host, "feedback.sandbox.push.apple.com"},
+		 %% {host, "localhost"},
+		 %% {feedback_host, "localhost"},
+		 {host, "gateway.sandbox.push.apple.com"},
+		 {feedback_host, "feedback.sandbox.push.apple.com"},
 		 {port, 2195},
 		 {feedback_port, 2196}]
 	 },
 	 {cert, [{certfile, "priv/ck.pem"},
 		 {password, "DieselPuppetPush01"}]
 	 },
-	 {failed_tokens_dets, "priv/failed_tokens"}
+	 {failed_tokens_dets, "priv/failed_tokens"},
+	 {feedback_check_interval, 3600000} % 1 hour
 	]}
   ]}.
 

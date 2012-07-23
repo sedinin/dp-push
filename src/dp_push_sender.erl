@@ -5,12 +5,13 @@
 
 -export([start_link/1, send/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
--export([test_send/0, test_feedback/0]).
+-export([test_send/0]).
 -include("logger.hrl").
 -include("types.hrl").
 
 -record(state, {
 	  table_id :: integer(),
+	  check_interval :: integer(),
 	  apns :: #apns{},
 	  cert :: #cert{}
 	 }).
@@ -30,18 +31,16 @@ test_send() ->
     send(dp_push_apns:test_msg(), dp_push_apns:test_device_token()).
 
 
-test_feedback() ->
-    ?MODULE ! get_feedback.
-
-
 %%% gen_server API
 
-init({DetsFile, #apns{} = Apns, #cert{} = Cert}) ->
+init({DetsFile, Interval, #apns{} = Apns, #cert{} = Cert}) ->
     ?INFO("~p inited with options ~p ~p ~n", [?MODULE, Apns, Cert]),
     {ok, TableId} = dets:open_file(failed_tokens,
 				   [{type, set}, {file, DetsFile}]),
     ?INFO("table info ~p~n", [dets:info(TableId)]),
-    {ok, #state{table_id = TableId, apns = Apns, cert = Cert}}.
+    self() ! check_feedback,
+    {ok, #state{table_id = TableId, check_interval = Interval,
+		apns = Apns, cert = Cert}}.
 
 
 handle_call({send, Msg, DeviceToken}, _From,
@@ -62,13 +61,18 @@ handle_cast(Any, State) ->
     {noreply, State}.
 
 
-handle_info(get_feedback, #state{table_id = TableId, apns = Apns, cert = Cert} = State) ->
+handle_info(check_feedback, #state{table_id = TableId, check_interval = Interval,
+				   apns = Apns, cert = Cert} = State) ->
     case dp_push_apns:get_feedback(Apns, Cert) of
 	{ok, Tokens} -> ?INFO("tokens from feedback ~p~n", [Tokens]),
 			save_tokens(TableId, Tokens);
 	{error, _} -> do_nothig
     end,
+    timer:send_after(Interval, check_feedback),
     {noreply, State};
+
+handle_info(stop, State) ->
+    {stop, normal, State};
 
 handle_info(Request, State) ->
     ?ERROR("unknown info ~p in ~p ~n", [Request, ?MODULE]),

@@ -34,9 +34,10 @@ send_data(Data, DeviceToken) ->
 
 
 start(_StartType, _StartArgs) ->
+    {ok, DetsFile} = application:get_env(failed_tokens_dets),
+    {ok, Interval} = application:get_env(feedback_check_interval),
     {ok, AProps} = application:get_env(apns),
     {ok, CProps} = application:get_env(cert),
-    {ok, DetsFile} = application:get_env(failed_tokens_dets),
     Apns = #apns{host = proplists:get_value(host, AProps),
 		 port = proplists:get_value(port, AProps),
 		 feedback_host = proplists:get_value(feedback_host, AProps),
@@ -44,7 +45,7 @@ start(_StartType, _StartArgs) ->
     Cert = #cert{certfile = proplists:get_value(certfile, CProps),
 		 password = proplists:get_value(password, CProps)},
     ?WARN("Server started ~p ~p ~n", [Apns, Cert]),
-    dp_push_sup:start_link({DetsFile, Apns, Cert}).
+    dp_push_sup:start_link({DetsFile, Interval, Apns, Cert}).
 
     
 stop(_State) ->
