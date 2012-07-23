@@ -12,18 +12,18 @@
 	 }).
 
 -record(alert, {
-	  body :: string(),
-	  action_loc_key :: string() | null,
-	  loc_key :: string(),
-	  loc_args :: [string()],
-	  launch_image :: string()
+	  body :: iolist(),
+	  action_loc_key :: iolist() | null,
+	  loc_key :: iolist(),
+	  loc_args :: [iolist()],
+	  launch_image :: iolist()
 	 }).
 
 -record(apns_msg, {
-	  alert :: string() | #alert{}, % An alert message to display to the user
+	  alert :: iolist() | #alert{}, % An alert message to display to the user
 	  badge :: integer(),           % A number to badge the application icon with
-	  sound :: string() | default,  % A sound to play
-	  data :: string()              % custom payload values outside the Apple-reserved aps namespace
+	  sound :: iolist() | default,  % A sound to play
+	  data :: iolist()              % custom payload values outside the Apple-reserved aps namespace
 	 }).
 
 

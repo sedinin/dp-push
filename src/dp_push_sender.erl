@@ -3,7 +3,7 @@
 
 -behavior(gen_server).
 
--export([start_link/1, send/2, test/0]).
+-export([start_link/1, send/2, send_alert/2, send_badge/2, send_data/2, test/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 -include("logger.hrl").
 -include("types.hrl").
@@ -23,6 +23,21 @@ start_link(Options) ->
 send(#apns_msg{} = Msg, DeviceToken) ->
     gen_server:cast(?MODULE, {send, Msg, DeviceToken}),
     ok.
+
+
+-spec(send_alert(iolist(), device_token()) -> ok).
+send_alert(Alert, DeviceToken) ->
+    send(#apns_msg{alert = Alert}, DeviceToken).
+
+
+-spec(send_badge(integer(), device_token()) -> ok).
+send_badge(Badge, DeviceToken) ->
+    send(#apns_msg{badge = Badge}, DeviceToken).
+
+
+-spec(send_data(iolist(), device_token()) -> ok).
+send_data(Data, DeviceToken) ->
+    send(#apns_msg{data = Data}, DeviceToken).
 
 
 test() ->
