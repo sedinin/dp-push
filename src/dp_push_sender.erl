@@ -19,23 +19,22 @@ start_link(Options) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, Options, []).
 
 
--spec(send(#apns_msg{}, device_token()) -> ok).
+-spec(send(#apns_msg{}, device_token()) -> ok | {error, too_big}).
 send(#apns_msg{} = Msg, DeviceToken) ->
-    gen_server:cast(?MODULE, {send, Msg, DeviceToken}),
-    ok.
+    gen_server:call(?MODULE, {send, Msg, DeviceToken}).
 
 
--spec(send_alert(iolist(), device_token()) -> ok).
+-spec(send_alert(iolist(), device_token()) -> ok | {error, too_big}).
 send_alert(Alert, DeviceToken) ->
     send(#apns_msg{alert = Alert}, DeviceToken).
 
 
--spec(send_badge(integer(), device_token()) -> ok).
+-spec(send_badge(integer(), device_token()) -> ok | {error, too_big}).
 send_badge(Badge, DeviceToken) ->
     send(#apns_msg{badge = Badge}, DeviceToken).
 
 
--spec(send_data(iolist(), device_token()) -> ok).
+-spec(send_data(iolist(), device_token()) -> ok | {error, too_big}).
 send_data(Data, DeviceToken) ->
     send(#apns_msg{data = Data}, DeviceToken).
 
@@ -51,14 +50,14 @@ init({#apns{} = Apns, #cert{} = Cert}) ->
     {ok, #state{apns = Apns, cert = Cert}}.
 
 
+handle_call({send, Msg, DeviceToken}, _From, #state{apns = Apns, cert = Cert} = State) ->
+    Res = dp_push_apns:send(Msg, DeviceToken, Apns, Cert),
+    {reply, Res, State};
+
 handle_call(Any, _From, State) ->
     ?ERROR("unknown call ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
-
-handle_cast({send, Msg, DeviceToken}, #state{apns = Apns, cert = Cert} = State) ->
-    dp_push_apns:send(Msg, DeviceToken, Apns, Cert),
-    {noreply, State};
 
 handle_cast(Any, State) ->
     ?ERROR("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
