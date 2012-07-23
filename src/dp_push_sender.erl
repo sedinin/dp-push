@@ -3,7 +3,7 @@
 
 -behavior(gen_server).
 
--export([start_link/1, send/2, send_alert/2, send_badge/2, send_data/2]).
+-export([start_link/1, send/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 -export([test_send/0, test_feedback/0]).
 -include("logger.hrl").
@@ -23,21 +23,6 @@ start_link(Options) ->
 -spec(send(#apns_msg{}, device_token()) -> ok | {error, too_big}).
 send(#apns_msg{} = Msg, DeviceToken) ->
     gen_server:call(?MODULE, {send, Msg, DeviceToken}).
-
-
--spec(send_alert(iolist(), device_token()) -> ok | {error, too_big}).
-send_alert(Alert, DeviceToken) ->
-    send(#apns_msg{alert = Alert}, DeviceToken).
-
-
--spec(send_badge(integer(), device_token()) -> ok | {error, too_big}).
-send_badge(Badge, DeviceToken) ->
-    send(#apns_msg{badge = Badge}, DeviceToken).
-
-
--spec(send_data(iolist(), device_token()) -> ok | {error, too_big}).
-send_data(Data, DeviceToken) ->
-    send(#apns_msg{data = Data}, DeviceToken).
 
 
 test_send() ->

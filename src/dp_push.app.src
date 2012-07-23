@@ -5,7 +5,7 @@
   {vsn, "1"},
   {registered, []},
   {applications, [kernel, stdlib]},
-  {mod, { dp_push_app, []}},
+  {mod, { dp_push, []}},
   {env, [{apns, [{host, "gateway.sandbox.push.apple.com"},
 		 {port, 2195},
 		 {feedback_host, "feedback.sandbox.push.apple.com"},

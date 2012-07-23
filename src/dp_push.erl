@@ -1,8 +1,9 @@
--module(dp_push_app).
+-module(dp_push).
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -behaviour(application).
--export([main/0, start/2, stop/1]).
+-export([main/0, send/2, send_alert/2, send_badge/2, send_data/2]).
+-export([start/2, stop/1]).
 -include("logger.hrl").
 -include("types.hrl").
 
@@ -11,6 +12,25 @@ main() ->
     application:start(dp_push),
     sync:go(),
     ok.
+
+-spec(send(#apns_msg{}, device_token()) -> ok | {error, too_big}).
+send(#apns_msg{} = Msg, DeviceToken) ->
+    dp_push_sender:send(Msg, DeviceToken).
+
+
+-spec(send_alert(iolist(), device_token()) -> ok | {error, too_big}).
+send_alert(Alert, DeviceToken) ->
+    send(#apns_msg{alert = Alert}, DeviceToken).
+
+
+-spec(send_badge(integer(), device_token()) -> ok | {error, too_big}).
+send_badge(Badge, DeviceToken) ->
+    send(#apns_msg{badge = Badge}, DeviceToken).
+
+
+-spec(send_data(iolist(), device_token()) -> ok | {error, too_big}).
+send_data(Data, DeviceToken) ->
+    send(#apns_msg{data = Data}, DeviceToken).
 
 
 start(_StartType, _StartArgs) ->
