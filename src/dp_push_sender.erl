@@ -44,8 +44,12 @@ init({DetsFile, #apns{} = Apns, #cert{} = Cert}) ->
     {ok, #state{table_id = TableId, apns = Apns, cert = Cert}}.
 
 
-handle_call({send, Msg, DeviceToken}, _From, #state{apns = Apns, cert = Cert} = State) ->
-    Res = dp_push_apns:send(Msg, DeviceToken, Apns, Cert),
+handle_call({send, Msg, DeviceToken}, _From,
+	    #state{table_id = TableId, apns = Apns, cert = Cert} = State) ->
+    Res = case dets:lookup(TableId, DeviceToken) of
+	      [{DeviceToken, _}] -> {error, failed_delivery};
+	      [] -> dp_push_apns:send(Msg, DeviceToken, Apns, Cert) 
+	  end,
     {reply, Res, State};
 
 handle_call(Any, _From, State) ->
