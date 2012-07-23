@@ -28,8 +28,9 @@ send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
 get_feedback(#apns{feedback_host = Host, feedback_port = Port},
 	     #cert{certfile = Certfile, password = Password}) ->
     case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of
-	{ok, Socket} -> Tokens = read_feedback([]),
-			?INFO("read tokens ~p~n", [Tokens]),
+	{ok, Socket} -> Data = read_feedback([]),
+			Tokens = get_tokens(Data, []),
+			?INFO("tokens ~p~n", [Tokens]),
 			ssl:close(Socket),
 			ok;
 	{error, Error} ->?ERROR("can't connect to ~p:~p ~p~n", [Host, Port, Error]),
@@ -37,16 +38,26 @@ get_feedback(#apns{feedback_host = Host, feedback_port = Port},
     end.
 
     
-read_feedback(Tokens) ->
+read_feedback(Data) ->
     receive
-	{ssl, _, <<_Time:32, 0, 32, DeviceToken/binary>>} -> read_feedback([DeviceToken|Tokens]);
-	{ssl_closed, _} -> Tokens
+	{ssl, _, Part} -> read_feedback([Part|Data]);
+	{ssl_closed, _} -> list_to_binary(lists:reverse(Data))
     end.
 
-%% receive {ssl,{sslsocket,new_ssl,<0.4674.0>},
-%%              [80,13,47,78,0,32,146,83,222,18,247,29,48,13,5,161,17,53,224,158,
-%%               9,182,50,196,120,213,50,49,55,35,31,4,167,199,180,222,148,125]}
-%% unknown info {ssl_closed,{sslsocket,new_ssl,<0.4674.0>}} in dp_push_sender 
+
+get_tokens(<<>>, Tokens) -> Tokens;
+
+get_tokens(Data, Tokens) ->
+    case Data of
+	<<_Time:32, Size:16/integer, Left1/binary>> ->
+	    BSize = Size * 8,
+	    case Left1 of
+		<<Token:BSize/integer, Left2/binary>> ->
+		    get_tokens(Left2, [Token|Tokens]);
+		_ -> Tokens
+	    end;
+	_ -> Tokens
+    end.
     
 
 -spec(wrap_to_json(#apns_msg{}) -> binary()).
