@@ -20,7 +20,7 @@ start_link(Options) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, Options, []).
 
 
--spec(send(#apns_msg{}, device_token()) -> ok | {error, too_big}).
+-spec(send(#apns_msg{}, device_token()) -> ok | {error, error()}).
 send(#apns_msg{} = Msg, DeviceToken) ->
     gen_server:call(?MODULE, {send, Msg, DeviceToken}).
 

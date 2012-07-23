@@ -13,22 +13,22 @@ main() ->
     sync:go(),
     ok.
 
--spec(send(#apns_msg{}, device_token()) -> ok | {error, too_big}).
+-spec(send(#apns_msg{}, device_token()) -> ok | {error, error()}).
 send(#apns_msg{} = Msg, DeviceToken) ->
     dp_push_sender:send(Msg, DeviceToken).
 
 
--spec(send_alert(iolist(), device_token()) -> ok | {error, too_big}).
+-spec(send_alert(iolist(), device_token()) -> ok | {error, error()}).
 send_alert(Alert, DeviceToken) ->
     send(#apns_msg{alert = Alert}, DeviceToken).
 
 
--spec(send_badge(integer(), device_token()) -> ok | {error, too_big}).
+-spec(send_badge(integer(), device_token()) -> ok | {error, error()}).
 send_badge(Badge, DeviceToken) ->
     send(#apns_msg{badge = Badge}, DeviceToken).
 
 
--spec(send_data(iolist(), device_token()) -> ok | {error, too_big}).
+-spec(send_data(iolist(), device_token()) -> ok | {error, error()}).
 send_data(Data, DeviceToken) ->
     send(#apns_msg{data = Data}, DeviceToken).
 

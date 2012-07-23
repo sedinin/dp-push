@@ -8,27 +8,34 @@
 
 %%% module API
 
--spec(send(#apns_msg{}, device_token(), #apns{}, #cert{}) -> ok | {error, too_big}).
+-spec(send(#apns_msg{}, device_token(), #apns{}, #cert{}) -> ok | {error, error()}).
 send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
      #cert{certfile = Certfile, password = Password}) ->
     Json = wrap_to_json(Msg),
     case byte_size(Json) of
 	Len when Len > 255 -> {error, too_big};
-	_ -> {ok, Socket} = ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]),
-	     ok = ssl:send(Socket, pack_simple(Json, DeviceToken)),
-	     ssl:close(Socket),
-	     ok
+	_ -> case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of
+		 {ok, Socket} -> ok = ssl:send(Socket, pack_simple(Json, DeviceToken)),
+				 ssl:close(Socket),
+				 ok;
+		 {error, Error} -> ?ERROR("can't connect to ~p:~p ~p~n", [Host, Port, Error]),
+				   {error, Error}
+	     end
     end.
 
 
--spec(get_feedback(#apns{}, #cert{}) -> ok).
+-spec(get_feedback(#apns{}, #cert{}) -> ok | {error, error()}).
 get_feedback(#apns{feedback_host = Host, feedback_port = Port},
 	     #cert{certfile = Certfile, password = Password}) ->
-    {ok, Socket} = ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]),
-    Tokens = read_feedback([]),
-    ?INFO("read tokens ~p~n", [Tokens]),
-    ssl:close(Socket),
-    ok.
+    case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of
+	{ok, Socket} -> Tokens = read_feedback([]),
+			?INFO("read tokens ~p~n", [Tokens]),
+			ssl:close(Socket),
+			ok;
+	{error, Error} ->?ERROR("can't connect to ~p:~p ~p~n", [Host, Port, Error]),
+			 {error, Error}
+    end.
+
     
 read_feedback(Tokens) ->
     receive

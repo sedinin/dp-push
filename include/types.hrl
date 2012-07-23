@@ -1,3 +1,5 @@
+-type(error() :: term()).
+
 -type(device_token() :: integer()).
 
 

@@ -6,9 +6,12 @@
   {registered, []},
   {applications, [kernel, stdlib]},
   {mod, { dp_push, []}},
-  {env, [{apns, [{host, "gateway.sandbox.push.apple.com"},
+  {env, [{apns, [
+		 {host, "localhost"},
+		 {feedback_host, "localhost"},
+		 %% {host, "gateway.sandbox.push.apple.com"},
+		 %% {feedback_host, "feedback.sandbox.push.apple.com"},
 		 {port, 2195},
-		 {feedback_host, "feedback.sandbox.push.apple.com"},
 		 {feedback_port, 2196}]
 	 },
 	 {cert, [{certfile, "priv/ck.pem"},
