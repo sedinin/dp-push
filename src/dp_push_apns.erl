@@ -2,7 +2,7 @@
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -export([send/4, get_feedback/2, wrap_to_json/1]).
--export([test_device_token/0, test_msg/0]).
+-export([test_token/1, test_msg/0]).
 -include("logger.hrl").
 -include("types.hrl").
 
@@ -24,15 +24,14 @@ send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
     end.
 
 
--spec(get_feedback(#apns{}, #cert{}) -> ok | {error, error()}).
+-spec(get_feedback(#apns{}, #cert{}) -> {ok, [device_token()]} | {error, error()}).
 get_feedback(#apns{feedback_host = Host, feedback_port = Port},
 	     #cert{certfile = Certfile, password = Password}) ->
     case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of
 	{ok, Socket} -> Data = read_feedback([]),
 			Tokens = get_tokens(Data, []),
-			?INFO("tokens ~p~n", [Tokens]),
 			ssl:close(Socket),
-			ok;
+			{ok, Tokens};
 	{error, Error} ->?ERROR("can't connect to ~p:~p ~p~n", [Host, Port, Error]),
 			 {error, Error}
     end.
@@ -109,9 +108,12 @@ pack_simple(Msg, DeviceToken) ->
 %%     <<1,Id:32/integer,Expire:32/integer,0,32,DeviceToken/integer,Size:16/integer,Msg/binary>>.
 
 
--spec(test_device_token() -> device_token()).
-test_device_token() ->
-    16#9253de12f71d300d05a11135e09e09b632c478d5323137231f04a7c7b4de947d.
+-spec(test_token(integer()) -> device_token()).
+test_token(1) ->
+    16#9253de12f71d300d05a11135e09e09b632c478d5323137231f04a7c7b4de947d;
+
+test_token(2) ->
+    16#a264e25780162353162231e1ebe6eaa6c4ccbb2f441586e910ed4d9cd78589c4.
 
 
 -spec(test_msg() -> #apns_msg{}).

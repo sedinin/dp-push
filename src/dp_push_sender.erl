@@ -10,6 +10,7 @@
 -include("types.hrl").
 
 -record(state, {
+	  table_id :: integer(),
 	  apns :: #apns{},
 	  cert :: #cert{}
 	 }).
@@ -35,9 +36,12 @@ test_feedback() ->
 
 %%% gen_server API
 
-init({#apns{} = Apns, #cert{} = Cert}) ->
+init({DetsFile, #apns{} = Apns, #cert{} = Cert}) ->
     ?INFO("~p inited with options ~p ~p ~n", [?MODULE, Apns, Cert]),
-    {ok, #state{apns = Apns, cert = Cert}}.
+    {ok, TableId} = dets:open_file(failed_tokens,
+				   [{type, set}, {file, DetsFile}]),
+    ?INFO("table info ~p~n", [dets:info(TableId)]),
+    {ok, #state{table_id = TableId, apns = Apns, cert = Cert}}.
 
 
 handle_call({send, Msg, DeviceToken}, _From, #state{apns = Apns, cert = Cert} = State) ->
@@ -54,8 +58,12 @@ handle_cast(Any, State) ->
     {noreply, State}.
 
 
-handle_info(get_feedback, #state{apns = Apns, cert = Cert} = State) ->
-    dp_push_apns:get_feedback(Apns, Cert),
+handle_info(get_feedback, #state{table_id = TableId, apns = Apns, cert = Cert} = State) ->
+    case dp_push_apns:get_feedback(Apns, Cert) of
+	{ok, Tokens} -> ?INFO("tokens from feedback ~p~n", [Tokens]),
+			save_tokens(TableId, Tokens);
+	{error, _} -> do_nothig
+    end,
     {noreply, State};
 
 handle_info(Request, State) ->
@@ -63,7 +71,8 @@ handle_info(Request, State) ->
     {noreply, State}.
 
 
-terminate(_Reason, _State) ->
+terminate(_Reason, #state{table_id = TableId}) ->
+    dets:close(TableId),
     ok.
 
 
@@ -71,3 +80,13 @@ code_change(_OldVersion, State, _Extra) ->
     {ok, State}.	
 
 
+save_tokens(_TableId, []) -> ok;
+
+save_tokens(TableId, [Token|Tokens]) ->
+    case dets:lookup(TableId, Token) of
+	[{Token, Count}] -> dets:insert(TableId, {Token, Count + 1});
+	[] -> dets:insert(TableId, {Token, 1})
+    end,
+    save_tokens(TableId, Tokens).
+    
+			       

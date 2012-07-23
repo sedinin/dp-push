@@ -16,6 +16,8 @@
 	 },
 	 {cert, [{certfile, "priv/ck.pem"},
 		 {password, "DieselPuppetPush01"}]
-	 }]}
+	 },
+	 {failed_tokens_dets, "priv/failed_tokens"}
+	]}
   ]}.
 
