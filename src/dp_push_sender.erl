@@ -3,9 +3,8 @@
 
 -behavior(gen_server).
 
--export([start_link/1, send/2]).
+-export([start_link/1, send/2, remove_device_from_failed/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
--export([test_send/0]).
 -include("logger.hrl").
 -include("types.hrl").
 
@@ -27,8 +26,10 @@ send(#apns_msg{} = Msg, DeviceToken) ->
     gen_server:call(?MODULE, {send, Msg, DeviceToken}).
 
 
-test_send() ->
-    send(dp_push_apns:test_msg(), dp_push_apns:test_device_token()).
+-spec(remove_device_from_failed(device_token()) -> ok).
+remove_device_from_failed(DeviceToken) ->
+    gen_server:cast(?MODULE, {remove_device_from_failed, DeviceToken}),
+    ok.
 
 
 %%% gen_server API
@@ -55,6 +56,10 @@ handle_call(Any, _From, State) ->
     ?ERROR("unknown call ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
+
+handle_cast({remove_device_from_failed, DeviceToken}, #state{table_id = TableId} = State) ->
+    dets:delete(TableId, DeviceToken),
+    {noreply, State};
 
 handle_cast(Any, State) ->
     ?ERROR("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
