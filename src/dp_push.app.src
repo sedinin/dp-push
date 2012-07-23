@@ -6,12 +6,12 @@
   {registered, []},
   {applications, [kernel, stdlib]},
   {mod, { dp_push_app, []}},
-  {env, [{apns, [
-		 {host, "gateway.sandbox.push.apple.com"},
-		 {port, 2195}]
+  {env, [{apns, [{host, "gateway.sandbox.push.apple.com"},
+		 {port, 2195},
+		 {feedback_host, "feedback.sandbox.push.apple.com"},
+		 {feedback_port, 2196}]
 	 },
-	 {cert, [
-		 {certfile, "priv/ck.pem"},
+	 {cert, [{certfile, "priv/ck.pem"},
 		 {password, "DieselPuppetPush01"}]
 	 }]}
   ]}.

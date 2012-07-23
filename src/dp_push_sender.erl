@@ -3,8 +3,9 @@
 
 -behavior(gen_server).
 
--export([start_link/1, send/2, send_alert/2, send_badge/2, send_data/2, test/0]).
+-export([start_link/1, send/2, send_alert/2, send_badge/2, send_data/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
+-export([test_send/0, test_feedback/0]).
 -include("logger.hrl").
 -include("types.hrl").
 
@@ -39,8 +40,12 @@ send_data(Data, DeviceToken) ->
     send(#apns_msg{data = Data}, DeviceToken).
 
 
-test() ->
+test_send() ->
     send(dp_push_apns:test_msg(), dp_push_apns:test_device_token()).
+
+
+test_feedback() ->
+    ?MODULE ! get_feedback.
 
 
 %%% gen_server API
@@ -63,6 +68,10 @@ handle_cast(Any, State) ->
     ?ERROR("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
+
+handle_info(get_feedback, #state{apns = Apns, cert = Cert} = State) ->
+    dp_push_apns:get_feedback(Apns, Cert),
+    {noreply, State};
 
 handle_info(Request, State) ->
     ?ERROR("unknown info ~p in ~p ~n", [Request, ?MODULE]),

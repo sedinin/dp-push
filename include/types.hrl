@@ -3,7 +3,9 @@
 
 -record(apns, {
 	  host :: string(),
-	  port :: integer()
+	  port :: integer(),
+	  feedback_host :: string(),
+	  feedback_port :: integer()
 	 }).
 
 -record(cert, {
