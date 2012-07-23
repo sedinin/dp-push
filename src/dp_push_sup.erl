@@ -19,10 +19,10 @@ init(Options) ->
     Shutdown = 2000,     % brutal_kill | int() >= 0 | infinity
     Type = worker,       % worker | supervisor
 
-    Sender = {sender, % used to identify the child spec internally by the supervisor
-	      {sender, start_link, Options}, % StartFun = {M, F, A}
+    Sender = {dp_push_sender, % used to identify the child spec internally by the supervisor
+	      {dp_push_sender, start_link, Options}, % StartFun = {M, F, A}
 	      Restart, Shutdown, Type, 
-	      [sender]}, % Modules  = [Module] | dynamic
+	      [dp_push_sender]}, % Modules  = [Module] | dynamic
 
     {ok, {SupFlags, [Sender]}}.
 

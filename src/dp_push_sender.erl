@@ -1,4 +1,4 @@
--module(sender).
+-module(dp_push_sender).
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -behavior(gen_server).
@@ -26,7 +26,7 @@ send(#apns_msg{} = Msg, DeviceToken) ->
 
 
 test() ->
-    send(apns:test_msg(), apns:test_device_token()).
+    send(dp_push_apns:test_msg(), dp_push_apns:test_device_token()).
 
 
 %%% gen_server API
@@ -37,21 +37,21 @@ init({#apns{} = Apns, #cert{} = Cert}) ->
 
 
 handle_call(Any, _From, State) ->
-    error_logger:error_msg("unknown call ~p in ~p ~n", [Any, ?MODULE]),
+    ?ERROR("unknown call ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
 
 handle_cast({send, Msg, DeviceToken}, #state{apns = Apns, cert = Cert} = State) ->
-    apns:send(Msg, DeviceToken, Apns, Cert),
+    dp_push_apns:send(Msg, DeviceToken, Apns, Cert),
     {noreply, State};
 
 handle_cast(Any, State) ->
-    error_logger:error_msg("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
+    ?ERROR("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
 
 handle_info(Request, State) ->
-    error_logger:error_msg("unknown info ~p in ~p ~n", [Request, ?MODULE]),
+    ?ERROR("unknown info ~p in ~p ~n", [Request, ?MODULE]),
     {noreply, State}.
 
 

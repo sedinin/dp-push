@@ -1,4 +1,4 @@
--module(apns).
+-module(dp_push_apns).
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -export([send/4, wrap_to_json/1]).
