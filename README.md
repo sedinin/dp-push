@@ -1,3 +1,8 @@
+# Erlang library for working with APNs
+
+from [dieselpuppet.com](http://dieselpuppet.com/).
+
+
 Server sends push notification to iOS devices with Apple Push Notification Service.
 
 [Apple Push Notification Service documentation](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW9)
