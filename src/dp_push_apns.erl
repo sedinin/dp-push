@@ -2,7 +2,7 @@
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -export([send/4, get_feedback/2, wrap_to_json/1]).
--export([test_token/1, test_msg/0]).
+
 -include("logger.hrl").
 -include("types.hrl").
 
@@ -100,22 +100,3 @@ wrap_data(Data) -> [",\"d\":\"", Data, "\""].
 pack_simple(Msg, DeviceToken) ->
     Size = byte_size(Msg),
     <<0,0,32,DeviceToken:256/integer,Size:16/integer,Msg/binary>>.
-
-
-%% -spec(pack_enhanced(binary(), device_token(), integer(), integer()) -> binary()).
-%% pack_enhanced(Msg, DeviceToken, Id, Expire) ->
-%%     Size = byte_size(Msg),
-%%     <<1,Id:32/integer,Expire:32/integer,0,32,DeviceToken/integer,Size:16/integer,Msg/binary>>.
-
-
--spec(test_token(integer()) -> device_token()).
-test_token(1) ->
-    16#9253de12f71d300d05a11135e09e09b632c478d5323137231f04a7c7b4de947d;
-
-test_token(2) ->
-    16#a264e25780162353162231e1ebe6eaa6c4ccbb2f441586e910ed4d9cd78589c4.
-
-
--spec(test_msg() -> #apns_msg{}).
-test_msg() ->
-    #apns_msg{alert = "Hello from Erlang", sound = default}.
