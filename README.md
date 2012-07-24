@@ -1,8 +1,8 @@
 Erlang library for working with Apple Push Notification Service from [dieselpuppet.com](http://dieselpuppet.com/).
 
-[Apple Push Notification Service documentation](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW9)
+[Apple Push Notification Service documentation](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW9).
 
-[Great tutorial about using APNs](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12)
+[Great tutorial about using APNs](http://www.raywenderlich.com/3443/apple-push-notification-services-tutorial-part-12).
 
 [dp_push documentation in russian](http://yzh44yzh.metalkia.com/post/128).
 
@@ -16,6 +16,7 @@ Set dependency in your **rebar.config**:
        ]}.
 
 Change configuration in **dp_push.app.src**:
+
   {env, [{apns, [
 		 {host, "gateway.sandbox.push.apple.com"},
 		 {feedback_host, "feedback.sandbox.push.apple.com"},
