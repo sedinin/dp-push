@@ -39,7 +39,10 @@ init({DetsFile, Interval, #apns{} = Apns, #cert{} = Cert}) ->
     {ok, TableId} = dets:open_file(failed_tokens,
 				   [{type, set}, {file, DetsFile}]),
     ?INFO("table info ~p~n", [dets:info(TableId)]),
-    self() ! check_feedback,
+    case application:get_env(feedback_enabled) of
+	{ok, true} -> self() ! check_feedback;
+	{ok, false} -> ?INFO_("feedback disabled~n")
+    end,
     {ok, #state{table_id = TableId, check_interval = Interval,
 		apns = Apns, cert = Cert}}.
 
