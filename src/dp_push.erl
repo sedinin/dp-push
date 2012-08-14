@@ -54,4 +54,5 @@ start(_StartType, _StartArgs) ->
 
     
 stop(_State) ->
+    dp_push_sender:stop(),
     ok.

@@ -15,7 +15,7 @@ init(Options) ->
     MaxSecondsBetweenRestarts = 60,
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
 
-    Restart = permanent, % permanent | transient | temporary
+    Restart = transient, % permanent | transient | temporary
     Shutdown = 2000,     % brutal_kill | int() >= 0 | infinity
     Type = worker,       % worker | supervisor
 
