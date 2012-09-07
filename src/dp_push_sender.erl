@@ -8,6 +8,8 @@
 -include("logger.hrl").
 -include("types.hrl").
 
+-define(CALL_TIMEOUT, 1000).
+
 -record(state, {
 	  table_id :: integer(),
 	  check_interval :: integer(),
@@ -23,7 +25,11 @@ start_link(Options) ->
 
 -spec(send(#apns_msg{}, device_token()) -> ok | {error, error()}).
 send(#apns_msg{} = Msg, DeviceToken) ->
-    gen_server:call(?MODULE, {send, Msg, DeviceToken}).
+    try
+	gen_server:call(?MODULE, {send, Msg, DeviceToken}, ?CALL_TIMEOUT)
+    catch
+	exit:{timeout,_} -> {error, timeout}
+    end.
 
 
 -spec(remove_device_from_failed(device_token()) -> ok).
