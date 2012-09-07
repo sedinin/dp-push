@@ -8,12 +8,13 @@
 
 %%% module API
 
--spec(send(#apns_msg{}, device_token(), #apns{}, #cert{}) -> ok | {error, error()}).
+-spec(send(#apns_msg{}, device_token(), #apns{}, #cert{}) ->
+	     ok | {error, too_big, integer()} | {error, error()}).
 send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
      #cert{certfile = Certfile, password = Password}) ->
     Json = wrap_to_json(Msg),
     case byte_size(Json) of
-	Len when Len > 255 -> {error, too_big};
+	Len when Len > 255 -> {error, too_big, Len};
 	_ -> case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of
 		 {ok, Socket} -> ok = ssl:send(Socket, pack_simple(Json, DeviceToken)),
 				 ssl:close(Socket),
