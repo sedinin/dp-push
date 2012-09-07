@@ -3,7 +3,7 @@
 
 -behavior(gen_server).
 
--export([start_link/1, send/2, remove_device_from_failed/1, stop/0]).
+-export([start_link/1, send/2, send_without_reply/2, remove_device_from_failed/1, stop/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 -include("logger.hrl").
 -include("types.hrl").
@@ -30,6 +30,12 @@ send(#apns_msg{} = Msg, DeviceToken) ->
     catch
 	exit:{timeout,_} -> {error, timeout}
     end.
+
+
+-spec(send_without_reply(#apns_msg{}, device_token()) -> ok).
+send_without_reply(#apns_msg{} = Msg, DeviceToken) ->
+    gen_server:cast(?MODULE, {send_without_reply, Msg, DeviceToken}),
+    ok.
 
 
 -spec(remove_device_from_failed(device_token()) -> ok).
@@ -70,6 +76,14 @@ handle_call(Any, _From, State) ->
     ?ERROR("unknown call ~p in ~p ~n", [Any, ?MODULE]),
     {noreply, State}.
 
+
+handle_cast({send_without_reply, Msg, DeviceToken}, 
+	    #state{table_id = TableId, apns = Apns, cert = Cert} = State) ->
+    case dets:lookup(TableId, DeviceToken) of
+	[{DeviceToken, _}] -> do_nothing;
+	[] -> dp_push_apns:send(Msg, DeviceToken, Apns, Cert) 
+    end,
+    {noreply, State};
 
 handle_cast({remove_device_from_failed, DeviceToken}, #state{table_id = TableId} = State) ->
     dets:delete(TableId, DeviceToken),

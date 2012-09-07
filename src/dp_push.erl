@@ -2,7 +2,9 @@
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -behaviour(application).
--export([main/0, send/2, send_alert/2, send_badge/2, send_data/2, remove_device_from_failed/1]).
+-export([main/0, send/2, send_without_reply/2,
+	 send_alert/2, send_badge/2, send_data/2,
+	 remove_device_from_failed/1]).
 -export([start/2, stop/1]).
 -include("logger.hrl").
 -include("types.hrl").
@@ -18,19 +20,24 @@ send(#apns_msg{} = Msg, DeviceToken) ->
     dp_push_sender:send(Msg, DeviceToken).
 
 
+-spec(send_without_reply(#apns_msg{}, device_token()) -> ok).
+send_without_reply(#apns_msg{} = Msg, DeviceToken) ->
+    dp_push_sender:send_without_reply(Msg, DeviceToken).
+
+
 -spec(send_alert(iolist(), device_token()) -> ok | {error, error()}).
 send_alert(Alert, DeviceToken) ->
-    send(#apns_msg{alert = Alert}, DeviceToken).
+    send_without_reply(#apns_msg{alert = Alert}, DeviceToken).
 
 
 -spec(send_badge(integer(), device_token()) -> ok | {error, error()}).
 send_badge(Badge, DeviceToken) ->
-    send(#apns_msg{badge = Badge}, DeviceToken).
+    send_without_reply(#apns_msg{badge = Badge}, DeviceToken).
 
 
 -spec(send_data(iolist(), device_token()) -> ok | {error, error()}).
 send_data(Data, DeviceToken) ->
-    send(#apns_msg{data = Data}, DeviceToken).
+    send_without_reply(#apns_msg{data = Data}, DeviceToken).
 
 
 -spec(remove_device_from_failed(device_token()) -> ok).
