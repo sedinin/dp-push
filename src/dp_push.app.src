@@ -3,7 +3,7 @@
  [
   {description, ""},
   {vsn, "1"},
-  {registered, []},
+  {registered, [dp_push_sup, dp_push_sender]},
   {applications, [kernel, stdlib]},
   {mod, { dp_push, []}},
   {env, [{apns, [
