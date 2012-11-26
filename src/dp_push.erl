@@ -12,7 +12,6 @@
 main() ->
     ssl:start(),
     application:start(dp_push),
-    sync:go(),
     ok.
 
 -spec(send(#apns_msg{}, device_token()) -> ok | {error, error()}).
