@@ -5,8 +5,9 @@
 
 -export([start_link/1, send/2, send_without_reply/2, remove_device_from_failed/1, stop/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
+
 -include("logger.hrl").
--include("types.hrl").
+-include("dp_push_types.hrl").
 
 -define(CALL_TIMEOUT, 1000).
 
@@ -23,7 +24,7 @@ start_link(Options) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, Options, []).
 
 
--spec(send(#apns_msg{}, device_token()) -> ok | {error, error()}).
+-spec(send(#apns_msg{}, device_token()) -> ok | {error, term()}).
 send(#apns_msg{} = Msg, DeviceToken) ->
     try
 	gen_server:call(?MODULE, {send, Msg, DeviceToken}, ?CALL_TIMEOUT)

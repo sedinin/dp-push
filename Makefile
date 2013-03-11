@@ -19,3 +19,8 @@ run:
 background:
 	ERL_LIBS=deps erl -detached $(ERL_RUN_ARGS)
 
+dialyzer:
+	dialyzer --src -I include src
+
+dialyzer_beam:
+	dialyzer ebin

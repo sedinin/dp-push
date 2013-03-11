@@ -2,8 +2,9 @@
 -author('Yura Zhloba <yzh44yzh@gmail.com>').
 
 -export([start/0, accept/3]).
+
 -include("logger.hrl").
--include("types.hrl").
+-include("dp_push_types.hrl").
 
 %%% module API
 
@@ -28,8 +29,8 @@ accept(LSocket, Certfile, Password) ->
     ?MODULE:accept(LSocket, Certfile, Password).
 
 get_data() ->
-    DT1 = dp_push_apns:test_token(1),
-    DT2 = dp_push_apns:test_token(2),
+    DT1 = 16#9253de12f71d300d05a11135e09e09b632c478d5323137231f04a7c7b4de947d,
+    DT2 = 16#a264e25780162353162231e1ebe6eaa6c4ccbb2f441586e910ed4d9cd78589c4,
     list_to_binary([
       [70,12,47,78,0,32,146,83,222,18,247,29,48,13,5,161,17,53,224,158,9,
        182,50,196,120,213,50,49,55,35,31,4,167,199,180,222,148,125],

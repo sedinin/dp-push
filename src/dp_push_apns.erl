@@ -4,12 +4,12 @@
 -export([send/4, get_feedback/2, wrap_to_json/1]).
 
 -include("logger.hrl").
--include("types.hrl").
+-include("dp_push_types.hrl").
 
 %%% module API
 
 -spec(send(#apns_msg{}, device_token(), #apns{}, #cert{}) ->
-	     ok | {error, too_big, integer()} | {error, error()}).
+	     ok | {error, too_big, integer()} | {error, term()}).
 send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
      #cert{certfile = Certfile, password = Password}) ->
     Json = wrap_to_json(Msg),
@@ -25,7 +25,7 @@ send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
     end.
 
 
--spec(get_feedback(#apns{}, #cert{}) -> {ok, [device_token()]} | {error, error()}).
+-spec(get_feedback(#apns{}, #cert{}) -> {ok, [device_token()]} | {error, term()}).
 get_feedback(#apns{feedback_host = Host, feedback_port = Port},
 	     #cert{certfile = Certfile, password = Password}) ->
     case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of

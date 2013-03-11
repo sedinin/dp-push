@@ -1,12 +1,4 @@
--ifndef(ERROR_TYPE).
--define(ERROR_TYPE, true).
--type(error() :: term()).
--endif.
-
--ifndef(DEVICE_TOKEN_TYPE).
--define(DEVICE_TOKEN_TYPE, true).
 -type(device_token() :: integer()).
--endif.
 
 -record(apns, {
 	  host :: string(),

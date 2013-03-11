@@ -6,15 +6,16 @@
 	 send_alert/2, send_badge/2, send_data/2,
 	 remove_device_from_failed/1]).
 -export([start/2, stop/1]).
+
 -include("logger.hrl").
--include("types.hrl").
+-include("dp_push_types.hrl").
 
 main() ->
     ssl:start(),
     application:start(dp_push),
     ok.
 
--spec(send(#apns_msg{}, device_token()) -> ok | {error, error()}).
+-spec(send(#apns_msg{}, device_token()) -> ok | {error, term()}).
 send(#apns_msg{} = Msg, DeviceToken) ->
     dp_push_sender:send(Msg, DeviceToken).
 
@@ -24,17 +25,17 @@ send_without_reply(#apns_msg{} = Msg, DeviceToken) ->
     dp_push_sender:send_without_reply(Msg, DeviceToken).
 
 
--spec(send_alert(iolist(), device_token()) -> ok | {error, error()}).
+-spec(send_alert(iolist(), device_token()) -> ok | {error, term()}).
 send_alert(Alert, DeviceToken) ->
     send_without_reply(#apns_msg{alert = Alert}, DeviceToken).
 
 
--spec(send_badge(integer(), device_token()) -> ok | {error, error()}).
+-spec(send_badge(integer(), device_token()) -> ok | {error, term()}).
 send_badge(Badge, DeviceToken) ->
     send_without_reply(#apns_msg{badge = Badge}, DeviceToken).
 
 
--spec(send_data(iolist(), device_token()) -> ok | {error, error()}).
+-spec(send_data(iolist(), device_token()) -> ok | {error, term()}).
 send_data(Data, DeviceToken) ->
     send_without_reply(#apns_msg{data = Data}, DeviceToken).
 
