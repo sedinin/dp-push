@@ -93,7 +93,7 @@ wrap_sound(default) -> ["\"sound\":\"default\""];
 wrap_sound(Sound) -> ["\"sound\":\"", Sound, "\""].
 
 wrap_content_available(undefined) -> [];
-wrap_content_available(Num) -> ["\"content-available\"", integer_to_list(Num)].
+wrap_content_available(Num) -> ["\"content-available\":", integer_to_list(Num)].
 
 wrap_data(undefined) -> [];
 wrap_data([]) -> [];
