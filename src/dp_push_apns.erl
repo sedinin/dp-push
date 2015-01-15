@@ -61,25 +61,24 @@ get_tokens(Data, Tokens) ->
     
 
 -spec(wrap_to_json(#apns_msg{}) -> binary()).
-wrap_to_json(#apns_msg{alert = Alert, badge = Badge, sound = Sound, data = Data}) ->
+wrap_to_json(#apns_msg{alert = Alert, badge = Badge, sound = Sound, content_available = CA, data = Data}) ->
     list_to_binary(
       ["{\"aps\":{",
-       merge_attr(wrap_alert(Alert),
-		  wrap_badge(Badge),
-		  wrap_sound(Sound)),
+       merge_attr([wrap_alert(Alert),
+                   wrap_badge(Badge),
+                   wrap_sound(Sound),
+                   wrap_content_available(CA)]),
        "}",
        wrap_data(Data),
        "}"]).
 
 
-merge_attr([], [], []) -> [];
-merge_attr(L1, [], []) -> L1;
-merge_attr([], L2, []) -> L2;
-merge_attr([], [], L3) -> L3;
-merge_attr(L1, [], L3) -> [L1, ",", L3];
-merge_attr(L1, L2, []) -> [L1, ",", L2];
-merge_attr([], L2, L3) -> [L2, ",", L3];
-merge_attr(L1, L2, L3) -> [L1, ",", L2, ",", L3].
+merge_attr(Elems) ->
+        merge_attrs(lists:filter(fun(E) -> E =/= [] end, Elems), []).
+merge_attrs([], [E]) -> E;
+merge_attrs([], Acc) -> lists:reverse(Acc);
+merge_attrs([E], Acc) -> merge_attrs([], [E | Acc]);
+merge_attrs([E|T], Acc) -> merge_attrs(T, [",", E | Acc]).
 
 wrap_alert(#alert{body = Body}) -> wrap_alert(Body); % TODO wrap all fields of #alert record
 wrap_alert(undefined) -> [];
@@ -92,6 +91,9 @@ wrap_badge(Num) -> ["\"badge\":", integer_to_list(Num)].
 wrap_sound(undefined) -> [];
 wrap_sound(default) -> ["\"sound\":\"default\""];
 wrap_sound(Sound) -> ["\"sound\":\"", Sound, "\""].
+
+wrap_content_available(undefined) -> [];
+wrap_content_available(Num) -> ["\"content-available\"", integer_to_list(Num)].
 
 wrap_data(undefined) -> [];
 wrap_data([]) -> [];
