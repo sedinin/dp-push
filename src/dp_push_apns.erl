@@ -15,7 +15,7 @@ send(#apns_msg{} = Msg, DeviceToken, #apns{host = Host, port = Port},
     Json = wrap_to_json(Msg),
     case byte_size(Json) of
 	Len when Len > 255 -> {error, too_big, Len};
-	_ -> case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}]) of
+	_ -> case ssl:connect(Host, Port, [{certfile, Certfile}, {password, Password}, {versions,['tlsv1.1']}]) of
 		 {ok, Socket} -> ok = ssl:send(Socket, pack_simple(Json, DeviceToken)),
 				 ssl:close(Socket),
 				 ok;
